@@ -1,0 +1,63 @@
+{
+    "// 1. Editor geral": "",
+    "editor.formatOnSave": true,
+    "editor.rulers": [100],
+    "editor.minimap.enabled": false,
+    "editor.fontLigatures": true,
+    "editor.suggestSelection": "first",
+    "files.autoSave": "onFocusChange",
+    "files.trimTrailingWhitespace": true,
+    "files.insertFinalNewline": true,
+    "explorer.confirmDelete": true,
+    "telemetry.telemetryLevel": "off",
+
+    "// 2. Terminal integrado (PowerShell como padrao)": "",
+    "terminal.integrated.defaultProfile.windows": "PowerShell",
+
+    "// 3. Python (pyenv-win via modulo 01-languages.ps1)": "",
+    "python.terminal.activateEnvironment": true,
+    "python.analysis.typeCheckingMode": "basic",
+    "[python]": {
+        "editor.defaultFormatter": "ms-python.black-formatter",
+        "editor.tabSize": 4
+    },
+
+    "// 4. R": "",
+    "r.rterm.windows": "C:\\Program Files\\R\\bin\\R.exe",
+    "r.bracketedPaste": true,
+
+    "// 5. Java": "",
+    "java.configuration.updateBuildConfiguration": "automatic",
+    "java.compile.nullAnalysis.mode": "automatic",
+
+    "// 6. C# / .NET": "",
+    "dotnet.defaultSolution": "disable",
+    "omnisharp.enableEditorConfigSupport": true,
+
+    "// 7. C/C++": "",
+    "C_Cpp.default.cppStandard": "c++20",
+    "C_Cpp.default.cStandard": "c17",
+    "C_Cpp.default.compilerPath": "C:\\msys64\\mingw64\\bin\\gcc.exe",
+    "cmake.configureOnOpen": true,
+
+    "// 8. Rust": "",
+    "rust-analyzer.check.command": "clippy",
+
+    "// 9. JavaScript / TypeScript / Node": "",
+    "typescript.updateImportsOnFileMove.enabled": "always",
+    "eslint.validate": ["javascript", "javascriptreact", "typescript", "typescriptreact"],
+    "[javascript]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+    "[typescript]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+
+    "// 10. Flutter / Dart": "",
+    "dart.flutterSdkPath": null,
+
+    "// 11. PlantUML / draw.io": "",
+    "plantuml.render": "PlantUMLServer",
+    "plantuml.server": "https://www.plantuml.com/plantuml",
+
+    "// 12. Git": "",
+    "git.autofetch": true,
+    "git.confirmSync": false,
+    "gitlens.hovers.currentLine.over": "line"
+}

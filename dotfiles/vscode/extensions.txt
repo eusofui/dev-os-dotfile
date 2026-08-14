@@ -1,0 +1,54 @@
+# extensions.txt
+# Uma extensao por linha (id no formato publisher.nome). Linhas comecando
+# com "#" sao ignoradas. Instalado automaticamente por
+# modules/08-dotfiles-apply.ps1 via "code --install-extension <id>".
+
+# --- Python ---
+ms-python.python
+ms-python.vscode-pylance
+ms-python.black-formatter
+
+# --- R ---
+REditorSupport.r
+
+# --- Java ---
+vscjava.vscode-java-pack
+
+# --- C# / .NET / MAUI ---
+ms-dotnettools.csdevkit
+ms-dotnettools.csharp
+
+# --- C / C++ ---
+ms-vscode.cpptools
+ms-vscode.cmake-tools
+twxs.cmake
+
+# --- Rust ---
+rust-lang.rust-analyzer
+tamasfe.even-better-toml
+
+# --- JavaScript / TypeScript / Node ---
+dbaeumer.vscode-eslint
+esbenp.prettier-vscode
+
+# --- Flutter / Dart ---
+Dart-Code.dart-code
+Dart-Code.flutter
+
+# --- Arquitetura / diagramas / requisitos ---
+jebbs.plantuml
+hediet.vscode-drawio
+yzhang.markdown-all-in-one
+
+# --- Git / GitHub ---
+eamodio.gitlens
+github.vscode-pull-request-github
+
+# --- Acesso remoto (servidor Docker remoto, WSL, Mac futuro) ---
+ms-vscode-remote.remote-ssh
+ms-vscode-remote.remote-wsl
+ms-azuretools.vscode-docker
+
+# --- Qualidade de vida ---
+EditorConfig.EditorConfig
+usernamehw.errorlens

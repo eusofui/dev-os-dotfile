@@ -1,0 +1,5 @@
+// keybindings.json — atalhos personalizados versionados.
+// Vazio por padrao (mantem os atalhos padrao do VS Code); adicione aqui
+// qualquer atalho customizado e ele sera sincronizado via o symlink
+// criado pelo modulo 08-dotfiles-apply.ps1.
+[]

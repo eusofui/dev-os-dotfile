@@ -1,0 +1,16 @@
+{
+    "//": "O settings.json COMPLETO do Windows Terminal contem GUIDs de perfil unicos por maquina, entao nao e seguro fazer symlink direto dele (poderia sobrescrever perfis com IDs diferentes em outra maquina). Em vez disso, copie manualmente os campos abaixo para dentro do seu Settings > Abrir arquivo JSON no Windows Terminal.",
+
+    "profiles": {
+        "defaults": {
+            "font": {
+                "face": "Cascadia Code",
+                "size": 11
+            },
+            "opacity": 95,
+            "useAcrylic": true,
+            "colorScheme": "One Half Dark"
+        }
+    },
+    "defaultProfile": "{574e775e-4f2a-5b96-ac1e-a2962a402336}"
+}
