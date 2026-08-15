@@ -49,6 +49,20 @@ if (-not $principalAtual.IsInRole([Security.Principal.WindowsBuiltInRole]::Admin
     exit
 }
 
+# O .exe compilado (PS2EXE) roda sem passar pela Execution Policy do Windows —
+# mas ele proprio chama install.ps1 mais abaixo, que E um .ps1 de verdade, e
+# esse fica sujeito a Execution Policy normalmente. Na maioria das maquinas
+# (principalmente as novas/domesticas) o padrao e "Restricted", que bloqueia
+# QUALQUER script. Isto aqui libera SOMENTE para este processo — nao muda
+# nenhuma configuracao permanente do Windows nem precisa de nada alem do que
+# este .exe ja tem (nao depende de politica de grupo).
+try {
+    Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass -Force -ErrorAction Stop
+}
+catch {
+    Escrever "Aviso: nao foi possivel ajustar a Execution Policy do processo ($($_.Exception.Message))." 'Yellow'
+}
+
 # IMPORTANTE: esta checagem NAO compara com o texto literal do marcador usado
 # la em cima (duplo underscore antes/depois de REPO ZIP URL). Se comparasse,
 # a troca automatica feita pelo gerar-instalador.ps1 / build-installer.yml
