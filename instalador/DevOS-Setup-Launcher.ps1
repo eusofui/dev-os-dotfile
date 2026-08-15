@@ -49,8 +49,16 @@ if (-not $principalAtual.IsInRole([Security.Principal.WindowsBuiltInRole]::Admin
     exit
 }
 
-if ($UrlRepoZip -eq '__REPO_ZIP_URL__') {
-    Escrever 'ERRO: este instalador foi compilado sem a URL do repositorio configurada.' 'Red'
+# IMPORTANTE: esta checagem NAO compara com o texto literal do marcador usado
+# la em cima (duplo underscore antes/depois de REPO ZIP URL). Se comparasse,
+# a troca automatica feita pelo gerar-instalador.ps1 / build-installer.yml
+# substituiria as DUAS ocorrencias (a de cima E esta aqui) pela mesma URL —
+# e a checagem passaria a comparar a URL com ela mesma, disparando "erro"
+# mesmo quando tudo deu certo. Por isso valida a FORMA da URL, nao o texto
+# exato do marcador.
+if ([string]::IsNullOrWhiteSpace($UrlRepoZip) -or $UrlRepoZip -notmatch '^https://github\.com/') {
+    Escrever 'ERRO: este instalador foi compilado sem a URL do repositorio configurada corretamente.' 'Red'
+    Escrever "Valor atual: '$UrlRepoZip'" 'Red'
     Escrever 'Preencha config.psd1 -> Identidade.RepoDotfiles no repositorio e gere o instalador de novo (gerar-instalador.ps1).' 'Red'
     Read-Host 'Pressione ENTER para sair'
     exit 1
