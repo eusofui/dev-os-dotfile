@@ -1,0 +1,68 @@
+name: Gerar DevOS-Setup.exe
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'instalador/**'
+      - 'install.ps1'
+      - 'bootstrap.ps1'
+      - 'config.psd1'
+      - 'lib/**'
+      - 'modules/**'
+      - 'dotfiles/**'
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Instalar o modulo PS2EXE
+        shell: pwsh
+        run: Install-Module -Name ps2exe -Scope CurrentUser -Force -AllowClobber
+
+      - name: Injetar a URL deste repositorio no launcher
+        shell: pwsh
+        run: |
+          $urlZip = "https://github.com/${{ github.repository }}/archive/refs/heads/${{ github.ref_name }}.zip"
+          Write-Host "URL do instalador vai apontar para: $urlZip"
+          $conteudo = Get-Content 'instalador\DevOS-Setup-Launcher.ps1' -Raw
+          $conteudo = $conteudo -replace [Regex]::Escape('__REPO_ZIP_URL__'), $urlZip
+          Set-Content -Path 'instalador\DevOS-Setup-Launcher.gerado.ps1' -Value $conteudo -Encoding utf8
+
+      - name: Compilar DevOS-Setup.exe
+        shell: pwsh
+        run: |
+          Import-Module ps2exe -Force
+          Invoke-ps2exe -inputFile 'instalador\DevOS-Setup-Launcher.gerado.ps1' `
+            -outputFile 'instalador\DevOS-Setup.exe' `
+            -title 'Development OS Setup' `
+            -description 'Instalador automatico da Development OS (dev-os-dotfiles)' `
+            -company '${{ github.repository_owner }}' `
+            -version '1.0.0.0' `
+            -requireAdmin `
+            -noConsole:$false
+
+      - name: Publicar como artifact desta execucao
+        uses: actions/upload-artifact@v4
+        with:
+          name: DevOS-Setup
+          path: instalador/DevOS-Setup.exe
+          retention-days: 90
+
+      - name: Publicar/atualizar a Release "latest" com o .exe
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: latest
+          name: Instalador mais recente
+          body: |
+            Instalador gerado automaticamente a partir do commit ${{ github.sha }}.
+            Baixe `DevOS-Setup.exe`, rode como Administrador e aguarde — tudo
+            desatendido a partir dai (ver README.md, secao "Instalador .exe").
+          files: instalador/DevOS-Setup.exe
+          prerelease: false
