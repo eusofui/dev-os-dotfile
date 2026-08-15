@@ -141,11 +141,33 @@ catch {
 # ----------------------------------------------------------------------------
 Escrever 'Iniciando install.ps1 (isso pode levar de 1 a 3 horas, dependendo da internet)...' 'Cyan'
 Set-Location $PastaDestino
+$caminhoInstall = Join-Path $PastaDestino 'install.ps1'
+
+# IMPORTANTE: nao usamos mais "& $caminhoInstall" aqui. O .exe compilado
+# (PS2EXE) roda dentro do seu PROPRIO motor PowerShell interno, e chamar um
+# .ps1 externo de dentro dele pode se comportar de forma inconsistente. Para
+# evitar isso, abrimos um processo powershell.exe de verdade — isolado do
+# .exe, exatamente como se voce mesmo tivesse digitado o comando — e deixamos
+# ELE rodar o install.ps1.
 try {
-    & (Join-Path $PastaDestino 'install.ps1')
+    $argumentosInstall = @(
+        '-NoProfile'
+        '-ExecutionPolicy', 'Bypass'
+        '-File', $caminhoInstall
+    )
+    $processoInstall = Start-Process -FilePath 'powershell.exe' -ArgumentList $argumentosInstall `
+        -WorkingDirectory $PastaDestino -NoNewWindow -Wait -PassThru
+
+    if ($processoInstall.ExitCode -ne 0) {
+        Escrever "install.ps1 terminou com codigo de saida $($processoInstall.ExitCode)." 'Red'
+        Escrever 'Revise reports\install-*.log dentro de C:\SOUFUI para detalhes.' 'Yellow'
+    }
+    else {
+        Escrever 'install.ps1 concluido.' 'Green'
+    }
 }
 catch {
-    Escrever "install.ps1 terminou com um erro: $($_.Exception.Message)" 'Red'
+    Escrever "Nao foi possivel iniciar install.ps1: $($_.Exception.Message)" 'Red'
     Escrever 'Revise reports\install-*.log dentro de C:\SOUFUI para detalhes.' 'Yellow'
 }
 
