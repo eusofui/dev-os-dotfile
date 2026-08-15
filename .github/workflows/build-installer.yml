@@ -1,5 +1,11 @@
 name: Gerar DevOS-Setup.exe
 
+# Compila automaticamente o instalador .exe sempre que a branch main muda —
+# assim voce nunca precisa gerar o .exe manualmente: da um "git push" e, em
+# alguns minutos, o instalador atualizado aparece em "Releases" (link fixo:
+# .../releases/download/latest/DevOS-Setup.exe) e tambem como artifact desta
+# execucao. Roda num runner Windows de verdade (nao neste sandbox), entao o
+# PS2EXE funciona sem restricoes de rede.
 on:
   push:
     branches: [main]
@@ -29,11 +35,33 @@ jobs:
       - name: Injetar a URL deste repositorio no launcher
         shell: pwsh
         run: |
+          $ErrorActionPreference = 'Stop'
           $urlZip = "https://github.com/${{ github.repository }}/archive/refs/heads/${{ github.ref_name }}.zip"
           Write-Host "URL do instalador vai apontar para: $urlZip"
-          $conteudo = Get-Content 'instalador\DevOS-Setup-Launcher.ps1' -Raw
-          $conteudo = $conteudo -replace [Regex]::Escape('__REPO_ZIP_URL__'), $urlZip
+
+          $caminhoOriginal = 'instalador\DevOS-Setup-Launcher.ps1'
+          $marcador = '__REPO_ZIP_URL__'
+          $conteudo = Get-Content $caminhoOriginal -Raw
+
+          $ocorrencias = ([regex]::Matches($conteudo, [Regex]::Escape($marcador))).Count
+          Write-Host "Ocorrencias do marcador '$marcador' encontradas em $caminhoOriginal antes da troca: $ocorrencias"
+          if ($ocorrencias -eq 0) {
+            Write-Host "::error::O marcador '$marcador' NAO foi encontrado em $caminhoOriginal. O arquivo no repositorio esta desatualizado ou diferente do esperado."
+            exit 1
+          }
+
+          $conteudo = $conteudo -replace [Regex]::Escape($marcador), $urlZip
           Set-Content -Path 'instalador\DevOS-Setup-Launcher.gerado.ps1' -Value $conteudo -Encoding utf8
+
+          # Confere no ARQUIVO GRAVADO (nao so na variavel em memoria) que a troca realmente colou.
+          $confirmacao = Get-Content 'instalador\DevOS-Setup-Launcher.gerado.ps1' -Raw
+          if ($confirmacao -like "*$marcador*") {
+            Write-Host "::error::A troca nao surtiu efeito no arquivo gravado — o marcador ainda esta presente em DevOS-Setup-Launcher.gerado.ps1."
+            exit 1
+          }
+
+          Write-Host "Confirmado: o marcador foi substituido com sucesso. Linha resultante:"
+          Select-String -Path 'instalador\DevOS-Setup-Launcher.gerado.ps1' -Pattern 'UrlRepoZip\s*='
 
       - name: Compilar DevOS-Setup.exe
         shell: pwsh
