@@ -104,7 +104,14 @@ try {
     $pastaExtracaoTemp = Join-Path $env:TEMP 'dev-os-dotfiles-extract'
 
     Escrever 'Baixando o repositorio...' 'Cyan'
-    Invoke-WebRequest -Uri $UrlRepoZip -OutFile $zipTemp -UseBasicParsing
+    # O endpoint .../archive/refs/heads/main.zip do GitHub aponta sempre para
+    # "o main atual", mas o CDN dele (codeload.github.com) pode servir por
+    # alguns minutos uma copia em cache de ANTES do ultimo commit — o que
+    # faria baixar uma versao desatualizada do repositorio logo apos uma
+    # correcao. Isto forca sempre buscar a versao mais nova.
+    $urlSemCache = "$UrlRepoZip`?cachebust=$([guid]::NewGuid().ToString('N'))"
+    $headersSemCache = @{ 'Cache-Control' = 'no-cache, no-store'; 'Pragma' = 'no-cache' }
+    Invoke-WebRequest -Uri $urlSemCache -OutFile $zipTemp -UseBasicParsing -Headers $headersSemCache
 
     if (Test-Path $pastaExtracaoTemp) { Remove-Item $pastaExtracaoTemp -Recurse -Force }
     Expand-Archive -Path $zipTemp -DestinationPath $pastaExtracaoTemp -Force
